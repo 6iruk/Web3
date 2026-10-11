@@ -39,7 +39,7 @@ Key Features
 
 Demo & Submissions
 
-• Demo Video: Watch Scout in Action (Placeholder)
+• Demo Video: [Watch Scout in Action](https://drive.google.com/file/d/1Zpw6ru12XxKB6LN5MZP38LxbOesfHev6/view?usp=sharing)
 • Weekly Submissions:
 	• Week 1 (web3-scout-agent.v1): github.com
 	• Week 2 (web3-scout-agent.v2): Pending
@@ -53,8 +53,7 @@ Future Scope
 Social Media & Links
 
 • Repository: GitHub - 6iruk/Web3
-• Twitter / X: @ScoutAgentWeb3 (Placeholder)
-• Farcaster: @scout.eth (Placeholder)
+• Twitter / X: @bekaikk
 
 ## What You Get
 
