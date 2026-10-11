@@ -26,7 +26,7 @@ type Message = { role: "user" | "agent"; text: string; steps?: Step[]; error?: b
 type Status = { hasApiKey: boolean; model: string; tools: { name: string; description: string }[] };
 type WalletInfo = { address: string | null; balance?: string };
 
-const EXAMPLES = ["What's the weather in Mumbai?", "What's in your wallet?", "Roll a 20 sided dice"];
+const EXAMPLES = ["I need a post for Social Media", "What's in your wallet?", "Get me a job description"];
 
 export default function Home() {
   const [status, setStatus] = useState<Status | null>(null);
@@ -86,12 +86,12 @@ export default function Home() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Label>
             <img src="/risein-logo.svg" alt="Rise In" className="mr-3 h-5 w-auto" />
-            <span className="text-foreground">/ Agentmaxxing</span>&nbsp;starter kit
+            <span className="text-foreground">/ Web3</span>&nbsp;Scout
           </Label>
           {status && <Label>Model: {status.model}</Label>}
         </div>
         <h1 className="text-5xl leading-[0.9] font-bold tracking-[-0.045em] uppercase md:text-7xl">
-          Agentic <span className="text-primary">starter.</span>
+          Web3 <span className="text-primary">Scout</span>
         </h1>
         <p className="max-w-xl text-lg text-muted-foreground">
           An AI agent that uses your tools and pays for APIs with its own wallet.

@@ -1,8 +1,60 @@
-# agentmaxxin
 
-A minimal Next.js template for building AI agents that call tools and pay for services with their own crypto wallet. The agent is powered by Google Gemini.
+Web3 Scout Agent (web3-scout-agent)
 
-The template is intentionally small. You will spend almost all of your time in a single file, `agent/tools.ts`, where each tool is a plain TypeScript function that the agent can decide to call.
+An autonomous, crypto-native dual-sided recruitment and talent-matching AI agent embedded with an on-chain EVM wallet.
+
+Problem Statement
+
+Traditional Web3 hiring suffers from high-noise resumes, lack of on-chain verifiable contribution history, and manual escrow friction. Existing recruitment platforms rely on off-chain trust, whereas DAOs and protocol teams need instant programmatic verification of smart contract deployments, Gitcoin credentials, and automated milestone disbursements. Scout bridges this gap by letting an AI agent audit talent on-chain, draft technical job briefs, and autonomously handle gas/escrow settlements.
+
+Tech Stack
+
+• Framework: Next.js ^16.3.6 (App Router / Server Actions)
+• Language: TypeScript ^5.9.3
+• UI & Styling: React ^19.3.0, Tailwind CSS ^4.3.3, Shadcn UI ^4.21.0, Lucide React ^1.48.0
+• Web3 / EVM: Viem ^2.56.9
+• AI SDK: @google/genai ^2.24.0
+• Animation: tw-animate-css ^1.4.0
+
+Supported AI Models
+
+• Gemini 2.5 Flash (gemini-2.5-flash via @google/genai) — Default low-latency reasoning and tool-dispatch model.
+• Gemini 2.5 Pro (gemini-2.5-pro via @google/genai) — High-complexity smart contract auditing and deep credential analysis.
+(Supports runtime model-switching via environment or request header config).
+
+Supported Tools
+
+1. verify_onchain_talent — Inspects EVM addresses (Base/Mainnet) for ETH balance, code deployments, and contract history via viem.
+2. deploy_bounty_escrow — Autonomously executes or simulates milestone ETH transfers/locks with a 1-line transparent audit log.
+3. generate_job_description — Generates zero-fluff, high-signal Web3 job and bounty briefs for recruiters.
+4. generate_candidate_social_post — Crafts engagement-ready X/Farcaster availability posts targeting specific ecosystems or companies. 
+5. get_wallet_address — Returns the autonomous agent's own embedded EVM wallet address and status.
+
+Key Features
+
+• Dual-Sided Routing: Automatically detects whether the user is an Employer (hiring/bounties) or Candidate (job hunting/auditing).
+• Autonomous Wallet Execution: Embedded EVM wallet handles micro-payments and gas logs with transparent single-line receipts.
+• On-Chain Signal over Resume Noise: Direct verification of 0x deployment history and developer reputation.
+• Zero-Config Deployment: Ready for full-stack hosting on Vercel.
+
+Demo & Submissions
+
+• Demo Video: Watch Scout in Action (Placeholder)
+• Weekly Submissions:
+	• Week 1 (web3-scout-agent.v1): github.com
+	• Week 2 (web3-scout-agent.v2): Pending
+	• Week 3 (web3-scout-agent.v3): Pending
+
+Future Scope
+
+• Week 2: Zero-Knowledge (ZK) proof integration for private credential verification (e.g., ZK-ID / private salary ranges) and multi-chain expansion (Optimism, Arbitrum).
+• Week 3: x402 HTTP payment required protocol integration for autonomous agent-to-agent paid job board API queries and smart contract factory escrow vaults.
+
+Social Media & Links
+
+• Repository: GitHub - 6iruk/Web3
+• Twitter / X: @ScoutAgentWeb3 (Placeholder)
+• Farcaster: @scout.eth (Placeholder)
 
 ## What You Get
 
