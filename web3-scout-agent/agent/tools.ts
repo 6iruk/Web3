@@ -74,7 +74,7 @@ export const tools: Tool[] = [
     },
   },
   {
-    name: "deploy_bounty_escrow",
+    name: "deploy_bounty_escrow(simulation)",
     description: "Use the agent's embedded wallet to lock funds into a simple milestone payout or log an autonomous financial execution.",
     parameters: {
       type: "object",
@@ -100,7 +100,7 @@ export const tools: Tool[] = [
       const costLog = `Paid ${amountEth} ETH to ${recipient} for: ${milestoneDescription}`;
 
       return {
-        status: "executed",
+        status: "simulation",
         txHash: "0x4a7c...mock_hash_or_real_sig",
         auditLog: costLog,
         recipient,
