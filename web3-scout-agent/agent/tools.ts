@@ -184,21 +184,6 @@ export const tools: Tool[] = [
       };
     },
   },
-  // ─── 1. A paid API: the agent's wallet signs a payment to unlock it ───
-  {
-    name: "get_weather",
-    description: "Get the current weather for a city. Costs 0.01 USDC, paid automatically from the agent's wallet.",
-    parameters: {
-      type: "object",
-      properties: {
-        city: { type: "string", description: "City name, e.g. Mumbai" },
-      },
-      required: ["city"],
-    },
-    run: async ({ city }, { baseUrl }) => {
-      return payAndFetch(`${baseUrl}/api/weather?city=${encodeURIComponent(city)}`);
-    },
-  },
   // ─── 3. A plain tool: no wallet, no API. Try changing this one first! ───
   {
     name: "roll_dice",

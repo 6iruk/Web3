@@ -85,7 +85,6 @@ export default function Home() {
       <header className="flex flex-col gap-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Label>
-            <img src="/risein-logo.svg" alt="Rise In" className="mr-3 h-5 w-auto" />
             <span className="text-foreground">/ Web3</span>&nbsp;Scout
           </Label>
           {status && <Label>Model: {status.model}</Label>}
