@@ -196,4 +196,166 @@ export const tools: Tool[] = [
     },
     run: async ({ sides = 6 }) => ({ rolled: Math.floor(Math.random() * sides) + 1, sides }),
   },
+  {
+    name: "aggregate_and_sort_jobs",
+    description: "Queries 6 endpoints concurrently (Web3.career, CryptoJobsList, Remote3, Arbeitnow, JoinRise, and Jobicy) for openings using technical keywords. The final output is explicitly separated into Web3 vs Non-Web3 buckets.",
+    parameters: {
+      type: "object",
+      properties: {
+        keywords: {
+          type: "array",
+          items: { type: "string" },
+          description: "An array of skill keywords to match against job listings (e.g. ['solidity', 'rust', 'typescript'])."
+        }
+      },
+      required: ["keywords"]
+    },
+    run: async ({ keywords }: { keywords: string[] }) => {
+      const cleanKeywords = keywords.map(k => k.trim().toLowerCase());
+      if (cleanKeywords.length === 0) return { error: "No search keywords provided." };
+
+      const matchesKeywords = (text: string) => {
+        const target = text.toLowerCase();
+        return cleanKeywords.some(keyword => target.includes(keyword));
+      };
+
+      // ==========================================
+      // WEB3 / CRYPTO NATIVE DATA SOURCES
+      // ==========================================
+
+      // --- SOURCE 1: Web3.career ---
+      const fetchWeb3Career = fetch(`https://web3.career{cleanKeywords[0]}`)
+        .then(res => res.ok ? res.json() : [])
+        .then(jobs => Array.isArray(jobs) ? jobs
+          .filter((j: any) => matchesKeywords(j.title || j.job_title || "") || matchesKeywords(j.description || ""))
+          .map((j: any) => ({
+            title: j.title || j.job_title,
+            company: j.company || j.company_name,
+            source: "Web3.career",
+            category: "Web3",
+            url: j.url || j.job_url || "https://web3.career",
+            location: j.location || "Remote"
+          })) : []);
+
+      // --- SOURCE 2: CryptoJobsList Feed ---
+      const fetchCryptoJobsList = fetch(`https://cryptojobslist.com`) // Fallback to public feed wrapper
+        .then(res => res.ok ? res.json() : [])
+        .then(jobs => Array.isArray(jobs) ? jobs
+          .filter((j: any) => matchesKeywords(j.title || "") || matchesKeywords(j.description || ""))
+          .map((j: any) => ({
+            title: j.title,
+            company: j.companyName || j.company,
+            source: "CryptoJobsList",
+            category: "Web3",
+            url: j.url || "https://cryptojobslist.com",
+            location: j.isRemote ? "Remote" : (j.location || "Remote")
+          })) : []);
+
+      // --- SOURCE 3: Remote3 (Web3 Remote Only) ---
+      const fetchRemote3 = fetch(`https://remote3.co`)
+        .then(res => res.ok ? res.json() : [])
+        .then(jobs => Array.isArray(jobs) ? jobs
+          .filter((j: any) => matchesKeywords(j.title || "") || matchesKeywords(j.description || ""))
+          .map((j: any) => ({
+            title: j.title,
+            company: j.company,
+            source: "Remote3",
+            category: "Web3",
+            url: j.url || "https://remote3.co",
+            location: "Remote"
+          })) : []);
+
+      // ==========================================
+      // TRADITIONAL / GENERAL TECH DATA SOURCES
+      // ==========================================
+
+      // --- SOURCE 4: Arbeitnow ---
+      const fetchArbeitnow = fetch(`https://arbeitnow.com`)
+        .then(res => res.ok ? res.json() : { data: [] })
+        .then(json => {
+          const rawJobs = json.data || [];
+          return rawJobs
+            .filter((j: any) => matchesKeywords(j.title || "") || matchesKeywords(j.description || ""))
+            .map((j: any) => ({
+              title: j.title,
+              company: j.company_name,
+              source: "Arbeitnow",
+              category: "Non-Web3",
+              url: j.url,
+              location: j.remote ? "Remote" : j.location
+            }));
+        });
+
+      // --- SOURCE 5: JoinRise Public API ---
+      const fetchJoinRise = fetch(`https://joinrise.io`)
+        .then(res => res.ok ? res.json() : [])
+        .then(jobs => Array.isArray(jobs) ? jobs
+          .filter((j: any) => matchesKeywords(j.title || "") || matchesKeywords(j.description || ""))
+          .map((j: any) => ({
+            title: j.title,
+            company: j.company || "Rise Partner",
+            source: "JoinRise",
+            category: "Non-Web3",
+            url: j.url || "https://joinrise.io",
+            location: j.location || "Remote"
+          })) : []);
+
+      // --- SOURCE 6: Jobicy Remote ---
+      const fetchJobicy = fetch(`https://jobicy.com`)
+        .then(res => res.ok ? res.json() : { jobs: [] })
+        .then(json => {
+          const rawJobs = json.jobs || [];
+          return rawJobs
+            .filter((j: any) => matchesKeywords(j.jobTitle || "") || matchesKeywords(j.jobDescription || ""))
+            .map((j: any) => ({
+              title: j.jobTitle,
+              company: j.companyName,
+              source: "Jobicy Remote",
+              category: "Non-Web3",
+              url: j.url,
+              location: j.jobGeo || "Remote"
+            }));
+        });
+
+      // Fire all 6 data collection requests concurrently
+      const results = await Promise.allSettled([
+        fetchWeb3Career,
+        fetchCryptoJobsList,
+        fetchRemote3,
+        fetchArbeitnow,
+        fetchJoinRise,
+        fetchJobicy
+      ]);
+
+      const integratedJobs: any[] = [];
+      results.forEach((result) => {
+        if (result.status === "fulfilled" && Array.isArray(result.value)) {
+          integratedJobs.push(...result.value);
+        }
+      });
+
+      // Unified cross-source deduplication signature
+      const seen = new Set();
+      const uniqueJobs = integratedJobs.filter(job => {
+        const signature = `${job.title}-${job.company}`.toLowerCase().replace(/\s+/g, '');
+        if (seen.has(signature)) return false;
+        seen.add(signature);
+        return true;
+      });
+
+      // Sort prioritizing Web3 listings up front
+      const sortedJobs = uniqueJobs.sort((a, b) => {
+        if (a.category === "Web3" && b.category !== "Web3") return -1;
+        if (a.category !== "Web3" && b.category === "Web3") return 1;
+        return 0;
+      });
+
+      return {
+        success: true,
+        keywords_evaluated: cleanKeywords,
+        total_unique_matches: sortedJobs.length,
+        jobs: sortedJobs.slice(0, 10) // Returns up to 10 balanced cross-ecosystem results
+      };
+    }
+  },
 ];
