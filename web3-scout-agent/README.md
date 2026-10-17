@@ -29,6 +29,7 @@ Supported Tools
 3. generate_job_description — Generates zero-fluff, high-signal Web3 job and bounty briefs for recruiters.
 4. generate_candidate_social_post — Crafts engagement-ready X/Farcaster availability posts targeting specific ecosystems or companies. 
 5. get_wallet_address — Returns the autonomous agent's own embedded EVM wallet address and status.
+6. aggregate_and_sort_jobs — Queries 6 endpoints concurrently (Web3.career, CryptoJobsList, Remote3, Arbeitnow, JoinRise, and Jobicy) for openings using technical keywords. The final output is explicitly separated into Web3 vs Non-Web3 buckets.
 
 Key Features
 
